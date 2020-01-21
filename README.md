@@ -3,7 +3,7 @@
 本文核心内容是利用JNI在native层处理来实现大GIF图播放，同时做了Glide以及纯Java层实现GIF图播放的性能对比，
 本文实验对象为一个14.7M大小的GIF图，实验结果如下：  
 
-实现方式  | 初始内存(M) | 最高内存(M) | 内存增长(M) | 耗时(S)
+实现方式  | 初始内存(M) | 最高内存(M) | 内存增长(M) | 耗时(S)  
 -------- | ---------- | ---------- | ---------- | ——————
 Native   | 60.9       | 127.2      | 66.3       | 2.505
 Glide    | 63.6       | 141.7      | 78.1       | 0.75
@@ -48,7 +48,8 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.1 Header
 
-<img src="\show\header_block.gif" alt="header_block" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/header_block.gif)  
+
 固定由6个字节组成。前三个字节是文件签名，后三个字节是版本号。
 
 |字节|描述|
@@ -58,7 +59,8 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.2 Logical Screen Descriptor
 
-<img src="\show\logical_screen_desc_block.gif" alt="logical_screen_desc_block" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/logical_screen_desc_block.gif)  
+
 固定由7字节组成。
 
 |字节|描述|
@@ -71,14 +73,15 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.3 Global Color Table
 
-<img src="\show\global_color_table.gif" alt="global_color_table" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/global_color_table.gif)  
+
 如果有的话就会跟在 Logical Screen Descriptor 块后面。
 
 在 Global Color Table 中每个字节仅代表一种颜色，所以 Global Color Table 的字节数 = 颜色数 * 3。在 Logical Screen Descriptor 中我们知道示例中包含 4 种颜色，即 Global Color Table 的字节数为 12 。所以读取接下来的 12 个字节。
 
 #### 2.2.4 **Graphics Control Extension**
 
-<img src="\show\graphic_control_ext.gif" alt="graphic_control_ext" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/graphic_control_ext.gif)  
 
 |字节|描述|
 |-|-|
@@ -92,7 +95,7 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.5 Image Descriptor
 
-<img src="\show\image_descriptor_block.gif" alt="image_descriptor_block" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/image_descriptor_block.gif)  
 
 |字节|描述|
 |-|-|
@@ -112,7 +115,8 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.7 Image Data
 
-<img src="\show\image_data_block.gif" alt="image_data_block" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/image_data_block.gif)  
+
 如果存在 Local Color Table，Image Data 就紧跟其后。如若不存在，则紧跟在 Image Descriptor 后。
 
 |字节|描述|
@@ -151,7 +155,7 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.10 Comment Extension
 
-<img src="\show\comment_ext.gif" alt="comment_ext" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/comment_ext.gif)  
 
 |字节|描述|
 |-|-|
@@ -162,5 +166,6 @@ https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 #### 2.2.11 Trailer
 
-<img src="\show\trailer_block.gif" alt="trailer_block" style="zoom:150%;" />
+![image](https://github.com/tianyalu/NeNativeGIF/raw/master/show/trailer_block.gif)  
+
 尾部标记，表示GIF的字节内容到此结束，固定值为 3B(分号)。
