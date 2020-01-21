@@ -109,7 +109,7 @@ void drawFrame(GifFileType *pGifFileType, GifBean *gifBean, AndroidBitmapInfo in
         //遍历行
         for (int x = imageDesc.Left; x < imageDesc.Left + imageDesc.Width; ++x) {
             pointPixelIndex = (y - imageDesc.Top) * imageDesc.Width + (x - imageDesc.Left);
-            //当前帧的像素数据   压缩  lzw算法
+            //当前帧的像素数据(颜色索引）   压缩  lzw算法
             gifByteType = savedImage.RasterBits[pointPixelIndex];
             //根据索引值到颜色列表中查找
             if (NULL != pColorMapObject) {
