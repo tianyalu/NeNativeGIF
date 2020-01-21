@@ -44,7 +44,7 @@ Java_com_sty_ne_nativegif_GifNativeDecoder_loadGifNative(JNIEnv *env, jclass cla
     //6.清理内存
     memset(gifBean->delays, 0, sizeof(int) * pGifFileType->ImageCount);
 
-    //在图形控制扩展块中的第5个字节和第6个字节存放的是每帧的延迟时间，单位是1/100秒，二唯一能标识这是一个图形扩展块
+    //在图形控制扩展块中的第5个字节和第6个字节存放的是每帧的延迟时间，单位是1/100秒，而唯一能标识这是一个图形扩展块
     //的是第二个字节，固定值0xF9
     ExtensionBlock *extensionBlock;
     //7.给结构体赋值
@@ -62,9 +62,9 @@ Java_com_sty_ne_nativegif_GifNativeDecoder_loadGifNative(JNIEnv *env, jclass cla
             //获取当前帧的图形控制拓展块中的延时时间（单位1/100秒 -> 10ms）
             //Bytes本来是存放图形控制块的，签名的标识、标签等都是固定值，不需要保存，所以这里两个字节表示一个int
             //小端模式：数据的高字节保存在内存的高地址中，数据的低字节保存在内存的低地址中->地址的增长顺序与值的增长顺序相同
+            //Bytes[0] 保留字节
             //Bytes[1] 低八位
             //Bytes[2] 高八位
-            //Bytes[0] 保留字节
             gifBean->delays[i] = (extensionBlock->Bytes[2] << 8 | extensionBlock->Bytes[1]) * 10;
         }
     }
@@ -97,7 +97,7 @@ void drawFrame(GifFileType *pGifFileType, GifBean *gifBean, AndroidBitmapInfo in
     }
     //先偏移指针
     int *px = (int *) pixels;  //图像首地址
-    //frameInfo.Top： y方向偏移量
+    //frameInfo.Top： y方向偏移量--->肯能会有实际的GIF图只有中间部分在动，周围静止的情况，图像描述信息仅有中间部分内容
     px = (int *) ((char *) px + info.stride * imageDesc.Top);
     int *line; //每一行的首地址
     int pointPixelIndex; //像素点的索引值
@@ -109,10 +109,10 @@ void drawFrame(GifFileType *pGifFileType, GifBean *gifBean, AndroidBitmapInfo in
         //遍历行
         for (int x = imageDesc.Left; x < imageDesc.Left + imageDesc.Width; ++x) {
             pointPixelIndex = (y - imageDesc.Top) * imageDesc.Width + (x - imageDesc.Left);
+            //当前帧的像素数据   压缩  lzw算法
             gifByteType = savedImage.RasterBits[pointPixelIndex];
             //根据索引值到颜色列表中查找
             if (NULL != pColorMapObject) {
-                //当前帧的像素数据   压缩  lzw算法
                 colorType = pColorMapObject->Colors[gifByteType];
                 //给每行每个像素赋予颜色
                 line[x] = argb(255, colorType.Red, colorType.Green, colorType.Blue);
